@@ -8,13 +8,13 @@
 	# lendo ângulo x do teclado
 	li	$v0, 7		# comando para ler double
 	syscall
-	s.d	$f0, 0($s0)	# salva valor lido na memória  (na variável x)
+	sdc1	$f0, 0($s0)	# salva valor lido na memória  (na variável x)
 	
 	# chamando função para calcular o seno do valor lido (x)
 	move	$a0, $s0	# passa endereço de x como argumento a0 para o procedimento calcula_seno
 	jal	calcula_seno
 	
-	l.d	$f2, 0($v0)	# carrega o resultado do procedimento calcula_seno através do endereço retornado em $v0
+	ldc1	$f2, 0($v0)	# carrega o resultado do procedimento calcula_seno através do endereço retornado em $v0
 				# $f2 = sen(x)
 	
 	# escrevendo o resultado no console
@@ -28,7 +28,7 @@
 
 calcula_seno:
 
-	l.d	$f2, 0($a0)	# $f2 = x
+	ldc1	$f2, 0($a0)	# $f2 = x
 	
 	li	$s1, 0		# $s1 = n
 	
@@ -69,8 +69,8 @@ calcula_seno:
 	mtc1.d	$s2, $f2	# coloca (-1)^n em $f2 para fazer os cálculos acima em double
 	cvt.d.w	$f2, $f2	# converte $f2 de word para double
 	
-	l.d	$f4, 0($s5)	# carrega (2n+1)! da memória heap e coloca em $f4  --> f4 = (2n+1)!
-	l.d	$f6, 8($s5)	# carrega x^(2n+1) da memória heap e coloca em $f6  --> f6 = x^(2n+1)
+	ldc1	$f4, 0($s5)	# carrega (2n+1)! da memória heap e coloca em $f4  --> f4 = (2n+1)!
+	ldc1	$f6, 8($s5)	# carrega x^(2n+1) da memória heap e coloca em $f6  --> f6 = x^(2n+1)
 	
 	div.d	$f8, $f2, $f4	# $f8 = (-1)^n / (2n+1)!
 	mul.d	$f8, $f8, $f6	# $f8 = [(-1)^n / (2n+1)!] * x^(2n+1)
@@ -80,7 +80,7 @@ calcula_seno:
 	
 	
 	addi	$s1, $s1, 1	# n++
-	bne	$s1, 30, Loop_somatorio	  # se n != 20 volta para o loop
+	bne	$s1, 20, Loop_somatorio	  # se n != 20 volta para o loop
 	
 	
 	# sai do loop
@@ -91,7 +91,7 @@ calcula_seno:
 	li	$v0, 9
   	li	$a0, 8
   	syscall
-  	s.d	$f10, 0($v0)	# salva o resultado na memória heap
+  	sdc1	$f10, 0($v0)	# salva o resultado na memória heap
   				# retorno $v0 é o endereço da memória onde o resultado do somatório (seno(x)) está salvo
   	
   	
@@ -136,7 +136,7 @@ fatorial:
 	slti	$t3, $a0, 2	# $t3 = 1 se $a0 < 2
 	beq	$t3, $zero, loop_fat	# vai para loop_fat se $t3 = 0, ou seja, se $a0 >= 2
 	
-	s.d	$f4, 0($a1)	# salva o resultado na memória heap
+	sdc1	$f4, 0($a1)	# salva o resultado na memória heap
 	jr	$ra
 	
   loop_fat:
@@ -148,7 +148,7 @@ fatorial:
 
 # Procedimento expoente
 expoente:
-	l.d	$f2, 0($a0)	# $f2 = x
+	ldc1	$f2, 0($a0)	# $f2 = x
 	
 	li	$t0, 1		
 	mtc1.d	$t0, $f4
@@ -160,7 +160,7 @@ expoente:
   	slt	$t3, $t1, $a1	# $t3 = 1 se contador < 2n+1
   	bne	$t3, $zero, loop_exp	# vai para loop_exp se $t3 != 0, ou seja, se contador < 2n+1
   	
-  	s.d	$f4, 8($a2)	# salva o resultado na memória heap
+  	sdc1	$f4, 8($a2)	# salva o resultado na memória heap
   	jr	$ra
   	
   loop_exp:
