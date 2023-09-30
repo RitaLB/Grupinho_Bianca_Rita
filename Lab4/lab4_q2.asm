@@ -6,9 +6,6 @@
 	digite:	  .asciiz  	"Digite o tamanho dos vetores A e B: "
 
 .text
-
-	# PRINCIPAIS MUDANÇAS:
-	
 	
 	li $v0, 4 		# Comando para escrever string
 	la $a0, digite 		# Carrega string (endereço)
