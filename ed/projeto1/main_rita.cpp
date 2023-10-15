@@ -4,7 +4,9 @@ int main() {
 
     char xmlfilename[100];
 
-    std::cin >> xmlfilename;  // entrada
+	std::cout << "insira arquivo = " << std::endl;
+    std::cin >>  xmlfilename;  // entrada
+	
     
     structures::ArrayStack<std::string>* pilha = new structures::ArrayStack<std::string>();
     
@@ -38,7 +40,7 @@ int main() {
     				}
     			} else if (select == 2 || select == 3) {
     				palavra += line[i];
-    				//std::cout << "add: " << palavra << std::endl;
+    				//std::co
     			}
     			if (select == 5) {
     				pilha->push(palavra);

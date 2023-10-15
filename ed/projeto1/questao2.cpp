@@ -30,10 +30,7 @@ Questao2::Questao2(std::string filename) {
 }
 
 void Questao2::ler_arquivo(std::string filename) {
-
-    char xmlfilename[100];
-    std::cin >> xmlfilename;  // entrada
-    
+   
     structures::ArrayStack<std::string>* pilha = new structures::ArrayStack<std::string>();
     
     std::string select;
@@ -42,7 +39,7 @@ void Questao2::ler_arquivo(std::string filename) {
     std::string categoria;
 
     std::string line;
-    std::ifstream myfile (xmlfilename);
+    std::ifstream myfile (filename);
     if (myfile.is_open()) {                 
         while (getline(myfile, line)) {
             for (int i = 0; i < line.size(); i++) {
@@ -50,12 +47,13 @@ void Questao2::ler_arquivo(std::string filename) {
                 if (line[i] == '<') {
                     //select = 1;
                     select = "abriu_chave";
+                    palavra = "";
                     //std::cout << "abre <: " << palavra << std::endl;
                 } else if (line[i] == '>') {
                     if (select == "fechamento") // select == 2
                         //select = 4;
-                        palavra = "";
                         select = "fechou_categoria";
+                        dado = "";
                 } else if (select == "abertura") {//select == 3
                         //select = 5;
                         select = "abriu_categoria";
@@ -79,19 +77,17 @@ void Questao2::ler_arquivo(std::string filename) {
                 if (select == "abriu_categoria") {
                     pilha->push(palavra);
                     categoria = palavra;
-                    //std::cout << "palavra empilhada: " << palavra << std::endl;
+                    std::cout << "palavra empilhada: " << palavra << std::endl;
                     //std::cout << "top: " << pilha->top() << std::endl;
                     //select = 0;
                     select = "informacao_dado";
                 } else if (select == "fechou_categoria") {
-                    if (pilha->top() == palavra) {
-                        pilha->pop();
-                        salvar_dado(categoria, dado);
-                        //std::cout << "pop: " << palavra << std::endl;
-                    } else {
-                        std::cout << "erro" << std::endl;
-                        return;
-                    }
+                    pilha->pop();
+                    std::cout << "categoria: " << categoria << std::endl;
+                    std::cout << "pop: " << palavra << std::endl;
+                    std::cout << "dado: " << dado << std::endl;
+                    salvar_dado(categoria, dado);
+                    
                     select = "informacao_dado";
                 }
                 if (select  == "informacao_dado"){
