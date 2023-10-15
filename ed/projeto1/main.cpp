@@ -10,7 +10,7 @@ int main() {
 
     std::cin >> xmlfilename;  // entrada
     
-    structures::ArrayStack<std::string>* pilha;
+    structures::ArrayStack<std::string>* pilha = new structures::ArrayStack<std::string>();
     
     int select = 0;
     std::string palavra;
@@ -43,7 +43,7 @@ int main() {
     				if (pilha->top() == palavra) {
     					pilha->pop();
     				} else {
-    					throw "erro";
+    					std::cout << "erro" << std::endl;
     				}
     			}
     				
@@ -53,7 +53,7 @@ int main() {
     	
     	myfile.close();
     	if (!pilha->empty()) {
-    		throw "erro";
+    		std::cout << "erro" << std::endl;
     	}
     	
     } else std::cout << "Erro ao abrir o arquivo" << std::endl;
