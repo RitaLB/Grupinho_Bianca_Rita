@@ -53,7 +53,7 @@ void Questao2::ler_arquivo(std::string filename) {
                     if (select == "fechamento") {// select == 2
                         //select = 4;
                         select = "fechou_categoria";
-                        dado = "";
+                        
 		        } else if (select == "abertura") {//select == 3
 		                //select = 5;
 		                select = "abriu_categoria";
@@ -88,10 +88,9 @@ void Questao2::ler_arquivo(std::string filename) {
                     std::cout << "pop: " << palavra << std::endl;
                     std::cout << "dado: " << dado << std::endl;
                     salvar_dado(categoria, dado);
-                    
+                    dado = "";
                     select = "informacao_dado";
-                }
-                if (select  == "informacao_dado"){
+                } else if (select  == "informacao_dado"){
                     dado += line[i];
                 }
                     
