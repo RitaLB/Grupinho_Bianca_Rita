@@ -4,67 +4,74 @@
 #include "array_stack.h"
 #include <stdexcept>
 
+enum Select {
+	FORA_TAG,
+	DENTRO_TAG,
+	DENTRO_COM_BARRA,
+	DENTRO_SEM_BARRA,
+	POP,
+	PUSH
+};
+
 int main() {
 
     char xmlfilename[100];
 
     std::cin >> xmlfilename;  // entrada
     
-    structures::ArrayStack<std::string>* pilha = new structures::ArrayStack<std::string>();
+//     --------------------  PROBLEMA 1  -------------------------
+
+    structures::ArrayStack<std::string>* pilha = new structures::ArrayStack<std::string>();   // pilha para a verificação de aninhamento
     
-    int select = 0;
-    std::string palavra;
+    Select select = FORA_TAG;
+    std::string identificador;
     
     std::string line;
     std::ifstream myfile (xmlfilename);
+    
     if (myfile.is_open()) {
-    	while (getline(myfile, line)) {
-    		for (int i = 0; i < line.size(); i++) {
-    			//std::cout << "select: " << select << std::endl;
+    	while (getline(myfile, line)) {			   // lendo arquivo linha por linha
+    		for (int i = 0; i < line.size(); i++) {    // lendo linha caracter por caracter
+    			// lidando com o que está dentro de < >
     			if (line[i] == '<') {
-    				select = 1;
-    				palavra = "";
-    				//std::cout << "abre <: " << palavra << std::endl;
+    				select = DENTRO_TAG;
+    				identificador = "";
     			} else if (line[i] == '>') {
-    				if (select == 2) 
-    					select = 4;
-    				else if (select == 3)
-    					select = 5;
-    				//std::cout << "fecha >: " << palavra << std::endl;
-    			} else if (select == 1) {
+    				if (select == DENTRO_COM_BARRA) 
+    					select = POP;
+    				else if (select == DENTRO_SEM_BARRA)
+    					select = PUSH;
+    			} else if (select == DENTRO_TAG) {
     				if (line[i] == '/') {
-    					select = 2;
-    					//std::cout << "com barra: " << palavra << std::endl;
+    					select = DENTRO_COM_BARRA;
     				} else {
-    					palavra += line[i];
-    					select = 3;
-    					//std::cout << "sem barra: " << palavra << std::endl;
+    					identificador += line[i];
+    					select = DENTRO_SEM_BARRA;
     				}
-    			} else if (select == 2 || select == 3) {
-    				palavra += line[i];
-    				//std::cout << "add: " << palavra << std::endl;
+    			} else if (select == DENTRO_COM_BARRA || select == DENTRO_SEM_BARRA) {
+    				identificador += line[i];
     			}
-    			if (select == 5) {
-    				pilha->push(palavra);
-    				//std::cout << "palavra empilhada: " << palavra << std::endl;
-    				//std::cout << "top: " << pilha->top() << std::endl;
-    				select = 0;
-    			} else if (select == 4) {
-    				if (pilha->top() == palavra) {
-    					pilha->pop();
-    					//std::cout << "pop: " << palavra << std::endl;
-    				} else {
+
+			// empilhando ou desempilhando palavras dentro de < >
+    			if (select == PUSH) {
+    				pilha->push(identificador);
+    				select = FORA_TAG;
+    			} else if (select == POP) {
+    				if (pilha->size() == 0 || pilha->top() != identificador) {
+    					// erro se, ao consultar o topo, a pilha estiver vazia ou se o identificador é diferente
     					std::cout << "erro" << std::endl;
     					return 0;
+    				} else {
+    					pilha->pop();
+    					select = FORA_TAG;
     				}
-    				select = 0;
     			}
-    				
     		}
-    		
     	}
     	
     	myfile.close();
+    	
+    	// erro se ao final da análise a pilha não estiver vazia
     	if (!pilha->empty()) {
     		std::cout << "erro" << std::endl;
     		return 0;
@@ -72,7 +79,6 @@ int main() {
     	
     } else std::cout << "Erro ao abrir o arquivo" << std::endl;
 
-    //std::cout << xmlfilename << std::endl;  // esta linha deve ser removida
 
     return 0;
 }
