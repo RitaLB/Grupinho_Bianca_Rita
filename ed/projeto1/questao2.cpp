@@ -77,13 +77,13 @@ void Questao2::ler_arquivo(std::string filename) {
 
                 if (select == "abriu_categoria") {
                     pilha->push(palavra);
-                    categoria = palavra;
+                    //categoria = palavra;
                     std::cout << "palavra empilhada: " << palavra << std::endl;
                     //std::cout << "top: " << pilha->top() << std::endl;
                     //select = 0;
                     select = "informacao_dado";
                 } else if (select == "fechou_categoria") {
-                    pilha->pop();
+                    categoria = pilha->pop();
                     std::cout << "categoria: " << categoria << std::endl;
                     std::cout << "pop: " << palavra << std::endl;
                     std::cout << "dado: " << dado << std::endl;
