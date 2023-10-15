@@ -50,13 +50,14 @@ void Questao2::ler_arquivo(std::string filename) {
                     palavra = "";
                     //std::cout << "abre <: " << palavra << std::endl;
                 } else if (line[i] == '>') {
-                    if (select == "fechamento") // select == 2
+                    if (select == "fechamento") {// select == 2
                         //select = 4;
                         select = "fechou_categoria";
                         dado = "";
-                } else if (select == "abertura") {//select == 3
-                        //select = 5;
-                        select = "abriu_categoria";
+		        } else if (select == "abertura") {//select == 3
+		                //select = 5;
+		                select = "abriu_categoria";
+		        }
                     //std::cout << "fecha >: " << palavra << std::endl;
                 } else if (select == "abriu_chave") { //select == 1
                     if (line[i] == '/') {
