@@ -1,8 +1,8 @@
-// Copyright [2023] <Rita Louro Barbosa e Bianca Mazzuco Verzola >
+// Copyright [2023] <Rita Louro Barbosa e Bianca Mazzuco Verzola>
 
 class Questao1 {
  public:
-    //! construtor com parametro cml
+    //! construtor com parametro xml
     explicit Questao1(std::string filename);
     bool correto_aninhamento = true;
 
@@ -10,12 +10,12 @@ class Questao1 {
     void verificar_aninhamento(std::ifstream & myfile);
 
     enum Select {
-        FORA_TAG,
-        DENTRO_TAG,
-        DENTRO_COM_BARRA,
-        DENTRO_SEM_BARRA,
-        POP,
-        PUSH 
+        NENHUM,
+        ABRIU_CHAVE,
+        ABERTURA,
+        FECHAMENTO,
+        FECHOU_CATEGORIA,
+        ABRIU_CATEGORIA
     };
     
 };
@@ -32,48 +32,49 @@ Questao1::Questao1(std::string filename) {
     myfile.close();
 }
 
-void Questao1::verificar_aninhamento(std::ifstream & myfile){
+void Questao1::verificar_aninhamento(std::ifstream &myfile) {
 
     structures::ArrayStack<std::string>* pilha = new structures::ArrayStack<std::string>();   // pilha para a verificação de aninhamento
-    Select select = FORA_TAG;
+    Select select;
     std::string identificador;
     std::string line;
 
     while (getline(myfile, line)) {			   // lendo arquivo linha por linha
-        for (int i = 0; i < line.size(); i++) {    // lendo linha caracter por caracter
+        for (int i = 0; i < line.size(); i++) {		   // lendo linha caracter por caracter
             // lidando com o que está dentro de < >
             if (line[i] == '<') {
-                select = DENTRO_TAG;
+                select = ABRIU_CHAVE;
                 identificador = "";
             } else if (line[i] == '>') {
-                if (select == DENTRO_COM_BARRA) 
-                    select = POP;
-                else if (select == DENTRO_SEM_BARRA)
-                    select = PUSH;
-            } else if (select == DENTRO_TAG) {
+                if (select == FECHAMENTO) 
+                    select = FECHOU_CATEGORIA;
+                else if (select == ABERTURA)
+                    select = ABRIU_CATEGORIA;
+            } else if (select == ABRIU_CHAVE) {
                 if (line[i] == '/') {
-                    select = DENTRO_COM_BARRA;
+                    select = FECHAMENTO;
                 } else {
                     identificador += line[i];
-                    select = DENTRO_SEM_BARRA;
+                    select = ABERTURA;
                 }
-            } else if (select == DENTRO_COM_BARRA || select == DENTRO_SEM_BARRA) {
+            } else if (select == FECHAMENTO || select == ABERTURA) {
                 identificador += line[i];
             }
 
         // empilhando ou desempilhando palavras dentro de < >
-            if (select == PUSH) {
+            if (select == ABRIU_CATEGORIA) {
                 pilha->push(identificador);
-                select = FORA_TAG;
-            } else if (select == POP) {
+                select = NENHUM;
+            } else if (select == FECHOU_CATEGORIA) {
                 if (pilha->size() == 0 || pilha->top() != identificador) {
                     // erro se, ao consultar o topo, a pilha estiver vazia ou se o identificador é diferente
                     std::cout << "erro" << std::endl;
                     correto_aninhamento = false;
+                    delete pilha;
                     return;
                 } else {
                     pilha->pop();
-                    select = FORA_TAG;
+                    select = NENHUM;
                 }
             }
         }
@@ -83,7 +84,8 @@ void Questao1::verificar_aninhamento(std::ifstream & myfile){
     if (!pilha->empty()) {
         std::cout << "erro" << std::endl;
         correto_aninhamento = false;
+        delete pilha;
         return;
     }
-
+    delete pilha;
 }
