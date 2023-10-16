@@ -1,4 +1,4 @@
-// Copyright [2019] <Rita Louro Barbosa>
+// Copyright [2023] <Rita Louro Barbosa e Bianca Mazzuco Verzola >
 #ifndef STRUCTURES_ARRAY_STACK_H
 #define STRUCTURES_ARRAY_STACK_H
 

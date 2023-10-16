@@ -1,11 +1,11 @@
-
+// Copyright [2023] <Rita Louro Barbosa e Bianca Mazzuco Verzola >
 class Questao2 {
  public:
     //! construtor com parametro cml
     explicit Questao2(std::string filename);
 
  private:
-    void ler_arquivo(std::string filename);
+    void ler_arquivo(std::ifstream & myfile);
     void salvar_dado(std::string categoria, std::string dado);
     void salvar_matriz(std::vector<std::vector<int>> matriz);
     void calcular_questao();
@@ -18,123 +18,110 @@ class Questao2 {
     
     std::string nome;
     std::vector<std::vector<int>> matriz_E;
+
+    enum Select {
+	INFORMACAO_DADO,
+	NENHUM,
+	ABRIU_CHAVE,
+	FECHAMENTO,
+	FECHOU_CATEGORIA,
+	ABERTURA,
+    ABRIU_CATEGORIA
+    };
 };
 
 Questao2::Questao2(std::string filename) {
-    ler_arquivo(filename);
-    //std::cout << "x = " << x << std::endl;
-    //std::cout << "y = " << y << std::endl;
-    //std::cout << "largura = " << largura << std::endl;
-    //std::cout << "altura = " << altura << std::endl;
-    //std::cout << "matriz = " << std::endl;
-    //for (int i = 0; i < altura; i++) {
-    //	for (int j = 0; j < largura; j++) {
-    //		std::cout << matriz_E[i][j];
-    //	}
-    //	std::cout << std::endl;
-    //}
+
+    std::ifstream myfile (filename);
+
+    if (myfile.is_open()) {   
+    ler_arquivo(myfile);
+    } else std::cout << "Erro ao abrir o arquivo" << std::endl;
+
+    myfile.close();
 }
 
-void Questao2::ler_arquivo(std::string filename) {
+void Questao2::ler_arquivo(std::ifstream & myfile) {
    
     structures::ArrayStack<std::string>* pilha = new structures::ArrayStack<std::string>();
-    
-    std::string select;
+    Select select;
     std::string dado;
     std::string palavra;
     std::string categoria;
     std::vector<std::vector<int>> matriz;
     int cont = 0;
-    
     std::string line;
-    std::ifstream myfile (filename);
-    if (myfile.is_open()) {                 
-        while (getline(myfile, line)) {
-            if (select == "informacao_dado" && pilha->top() == "matriz") {
-		std::vector<int> linhaMatriz;
-		for (char c : line) {
-	    	   if (c == '0') {
-			linhaMatriz.push_back(0);
-	    	   } else if (c == '1') {
-			linhaMatriz.push_back(1);
-	    	   }
-		}
-		matriz.push_back(linhaMatriz);
-		cont++;
-		if (cont == altura) {
-			select = "nenhum";
-			salvar_matriz(matriz);
-			cont = 0;
-			matriz.clear();
-		}
-            } else {
+              
+    while (getline(myfile, line)) {
+        if (select == INFORMACAO_DADO && pilha->top() == "matriz") {
+
+            std::vector<int> linhaMatriz;
+            for (char c : line) {
+                    if (c == '0') {
+                linhaMatriz.push_back(0);
+                    } else if (c == '1') {
+                linhaMatriz.push_back(1);
+                    }
+            }
+            
+            matriz.push_back(linhaMatriz);
+            cont++;
+            if (cont == altura) {
+                select = NENHUM;
+                salvar_matriz(matriz);
+                cont = 0;
+                matriz.clear();
+            }
+        } else {
             for (int i = 0; i < line.size(); i++) {
-                //std::cout << "select: " << select << std::endl;
+
                 if (line[i] == '<') {
                     //select = 1;
-                    select = "abriu_chave";
+                    select = ABRIU_CHAVE;
                     palavra = "";
-                    //std::cout << "abre <: " << palavra << std::endl;
                 } else if (line[i] == '>') {
-                    if (select == "fechamento") {// select == 2
-                        //select = 4;
-                        select = "fechou_categoria";
+                    if (select == FECHAMENTO) {// select == 2
+                        select = FECHOU_CATEGORIA;
                         
-		        } else if (select == "abertura") {//select == 3
-		                //select = 5;
-		                select = "abriu_categoria";
-		        }
-                    //std::cout << "fecha >: " << palavra << std::endl;
-                } else if (select == "abriu_chave") { //select == 1
+                    } else if (select == ABERTURA) {//select == 3
+                        select = ABRIU_CATEGORIA;
+                    }
+                } else if (select == ABRIU_CHAVE) { //select == 1
                     if (line[i] == '/') {
-                        //select = 2;
-                        select = "fechamento";
-                        //std::cout << "com barra: " << palavra << std::endl;
+                        select = FECHAMENTO;
                     } else {
                         palavra += line[i];
-                        //select = 3;
-                        select = "abertura";
-                        //std::cout << "sem barra: " << palavra << std::endl;
+                        select = ABERTURA;
                     }
-                } else if (select == "fechamento" || select == "abertura") { //select == 2 || select == 3
+                } else if (select == FECHAMENTO || select == ABERTURA) { //select == 2 || select == 3
                     palavra += line[i];
-                    //std::cout << "add: " << palavra << std::endl;
                 } 
 
-                if (select == "abriu_categoria") {
+                if (select == ABRIU_CATEGORIA) {
                     pilha->push(palavra);
-                    //categoria = palavra;
-                    //std::cout << "palavra empilhada: " << palavra << std::endl;
-                    //std::cout << "top: " << pilha->top() << std::endl;
-                    //select = 0;
-                    select = "informacao_dado";
-                } else if (select == "fechou_categoria") {
+                    select = INFORMACAO_DADO;
+                } else if (select == FECHOU_CATEGORIA) {
                     categoria = pilha->pop();
-                    //std::cout << "categoria: " << categoria << std::endl;
-                    //std::cout << "pop: " << palavra << std::endl;
-                    //std::cout << "dado: " << dado << std::endl;
                     salvar_dado(categoria, dado);
                     dado = "";
-                    select = "informacao_dado";
+                    select = INFORMACAO_DADO;
                     if (categoria == "cenario") {
-                    	calcular_questao();
+                        calcular_questao();
                     }
-                } else if (select  == "informacao_dado"){
+                } else if (select  == INFORMACAO_DADO){
                     dado += line[i];
                 }
                     
             }
-           }
-            
         }
         
-        myfile.close();
-        if (!pilha->empty()) {
-            std::cout << "erro" << std::endl;
-            //return;
-        }
+    }
+    
+    if (!pilha->empty()) {
+        std::cout << "erro" << std::endl;
+        return;
+    }
         
-    } else std::cout << "Erro ao abrir o arquivo" << std::endl;
 }
 
 void Questao2::salvar_dado(std::string categoria, std::string dado){
