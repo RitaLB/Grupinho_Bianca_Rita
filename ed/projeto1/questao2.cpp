@@ -1,4 +1,4 @@
-
+#include <vector>
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -13,12 +13,16 @@ class Questao2 {
  private:
     void ler_arquivo(std::string filename);
     void salvar_dado(std::string categoria, std::string dado);
+    void salvar_matriz(std::vector<std::vector<int>> matriz);
 
     int altura;
     int largura;
 
     int x;
     int y;
+    
+    std::string nome;
+    std::vector<std::vector<int>> matriz_E;
 };
 
 Questao2::Questao2(std::string filename) {
@@ -27,6 +31,13 @@ Questao2::Questao2(std::string filename) {
     std::cout << "y = " << y << std::endl;
     std::cout << "largura = " << largura << std::endl;
     std::cout << "altura = " << altura << std::endl;
+    std::cout << "matriz = " << std::endl;
+    for (int i = 0; i < altura; i++) {
+    	for (int j = 0; j < largura; j++) {
+    		std::cout << matriz_E[i][j];
+    	}
+    	std::cout << std::endl;
+    }
 }
 
 void Questao2::ler_arquivo(std::string filename) {
@@ -37,11 +48,31 @@ void Questao2::ler_arquivo(std::string filename) {
     std::string dado;
     std::string palavra;
     std::string categoria;
-
+    std::vector<std::vector<int>> matriz;
+    int cont = 0;
+    
     std::string line;
     std::ifstream myfile (filename);
     if (myfile.is_open()) {                 
         while (getline(myfile, line)) {
+            if (select == "informacao_dado" && pilha->top() == "matriz") {
+		std::vector<int> linhaMatriz;
+		for (char c : line) {
+	    	   if (c == '0') {
+			linhaMatriz.push_back(0);
+	    	   } else if (c == '1') {
+			linhaMatriz.push_back(1);
+	    	   }
+		}	
+		matriz.push_back(linhaMatriz);
+		cont++;
+		if (cont == altura) {
+			select = "nenhum";
+			salvar_matriz(matriz);
+			cont = 0;
+			std::vector<std::vector<int>> matriz;
+		}
+            } else {
             for (int i = 0; i < line.size(); i++) {
                 //std::cout << "select: " << select << std::endl;
                 if (line[i] == '<') {
@@ -95,6 +126,7 @@ void Questao2::ler_arquivo(std::string filename) {
                 }
                     
             }
+           }
             
         }
         
@@ -123,5 +155,13 @@ void Questao2::salvar_dado(std::string categoria, std::string dado){
     if (categoria == "altura"){
         altura = std::stoi(dado);
     }
+    
+    if (categoria == "nome") {
+    	nome = dado;
+    }
+}
+
+void Questao2::salvar_matriz(std::vector<std::vector<int>> matriz) {
+	matriz_E = matriz;
 }
 
