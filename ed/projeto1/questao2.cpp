@@ -4,6 +4,8 @@
 #include <fstream>
 #include "array_stack.h"
 #include <stdexcept>
+#include <tuple>
+#include "array_queue.h"
 
 class Questao2 {
  public:
@@ -14,6 +16,7 @@ class Questao2 {
     void ler_arquivo(std::string filename);
     void salvar_dado(std::string categoria, std::string dado);
     void salvar_matriz(std::vector<std::vector<int>> matriz);
+    void calcular_questao();
 
     int altura;
     int largura;
@@ -27,17 +30,17 @@ class Questao2 {
 
 Questao2::Questao2(std::string filename) {
     ler_arquivo(filename);
-    std::cout << "x = " << x << std::endl;
-    std::cout << "y = " << y << std::endl;
-    std::cout << "largura = " << largura << std::endl;
-    std::cout << "altura = " << altura << std::endl;
-    std::cout << "matriz = " << std::endl;
-    for (int i = 0; i < altura; i++) {
-    	for (int j = 0; j < largura; j++) {
-    		std::cout << matriz_E[i][j];
-    	}
-    	std::cout << std::endl;
-    }
+    //std::cout << "x = " << x << std::endl;
+    //std::cout << "y = " << y << std::endl;
+    //std::cout << "largura = " << largura << std::endl;
+    //std::cout << "altura = " << altura << std::endl;
+    //std::cout << "matriz = " << std::endl;
+    //for (int i = 0; i < altura; i++) {
+    //	for (int j = 0; j < largura; j++) {
+    //		std::cout << matriz_E[i][j];
+    //	}
+    //	std::cout << std::endl;
+    //}
 }
 
 void Questao2::ler_arquivo(std::string filename) {
@@ -63,14 +66,14 @@ void Questao2::ler_arquivo(std::string filename) {
 	    	   } else if (c == '1') {
 			linhaMatriz.push_back(1);
 	    	   }
-		}	
+		}
 		matriz.push_back(linhaMatriz);
 		cont++;
 		if (cont == altura) {
 			select = "nenhum";
 			salvar_matriz(matriz);
 			cont = 0;
-			std::vector<std::vector<int>> matriz;
+			matriz.clear();
 		}
             } else {
             for (int i = 0; i < line.size(); i++) {
@@ -109,18 +112,21 @@ void Questao2::ler_arquivo(std::string filename) {
                 if (select == "abriu_categoria") {
                     pilha->push(palavra);
                     //categoria = palavra;
-                    std::cout << "palavra empilhada: " << palavra << std::endl;
+                    //std::cout << "palavra empilhada: " << palavra << std::endl;
                     //std::cout << "top: " << pilha->top() << std::endl;
                     //select = 0;
                     select = "informacao_dado";
                 } else if (select == "fechou_categoria") {
                     categoria = pilha->pop();
-                    std::cout << "categoria: " << categoria << std::endl;
-                    std::cout << "pop: " << palavra << std::endl;
-                    std::cout << "dado: " << dado << std::endl;
+                    //std::cout << "categoria: " << categoria << std::endl;
+                    //std::cout << "pop: " << palavra << std::endl;
+                    //std::cout << "dado: " << dado << std::endl;
                     salvar_dado(categoria, dado);
                     dado = "";
                     select = "informacao_dado";
+                    if (categoria == "cenario") {
+                    	calcular_questao();
+                    }
                 } else if (select  == "informacao_dado"){
                     dado += line[i];
                 }
@@ -165,3 +171,63 @@ void Questao2::salvar_matriz(std::vector<std::vector<int>> matriz) {
 	matriz_E = matriz;
 }
 
+void Questao2::calcular_questao() {
+	std::vector<std::vector<int>> matriz_R;
+	for (int i = 0; i < altura; i++) {
+		std::vector<int> linha_matriz_R;
+		for (int j = 0; j < largura; j++) {
+			linha_matriz_R.push_back(0);
+		}
+		matriz_R.push_back(linha_matriz_R);
+	}
+
+	structures::ArrayQueue<std::tuple<int, int>>* fila = new structures::ArrayQueue<std::tuple<int, int>>(200u);
+	std::tuple<int, int> xy(x, y);
+	if (matriz_E[x][y] == 1) {
+		fila->enqueue(xy);
+		matriz_R[x][y] = 1;
+	}
+	
+	while (!fila->empty()) {
+		xy = fila->dequeue();
+		if (std::get<0>(xy)-1 >=0) {
+			std::tuple<int, int> cima(std::get<0>(xy)-1, std::get<1>(xy));
+			if (matriz_E[std::get<0>(cima)][std::get<1>(cima)] == 1 && matriz_R[std::get<0>(cima)][std::get<1>(cima)] == 0) {
+				fila->enqueue(cima);
+				matriz_R[std::get<0>(cima)][std::get<1>(cima)] = 1;
+			}
+		}
+		if (std::get<0>(xy)+1 < altura) {
+			std::tuple<int, int> baixo(std::get<0>(xy)+1, std::get<1>(xy));
+			if (matriz_E[std::get<0>(baixo)][std::get<1>(baixo)] == 1 && matriz_R[std::get<0>(baixo)][std::get<1>(baixo)] == 0) {
+				fila->enqueue(baixo);
+				matriz_R[std::get<0>(baixo)][std::get<1>(baixo)] = 1;
+			}
+		}
+		if (std::get<1>(xy)-1 >=0) {
+			std::tuple<int, int> esquerda(std::get<0>(xy), std::get<1>(xy)-1);
+			if (matriz_E[std::get<0>(esquerda)][std::get<1>(esquerda)] == 1 && matriz_R[std::get<0>(esquerda)][std::get<1>(esquerda)] == 0) {
+				fila->enqueue(esquerda);
+				matriz_R[std::get<0>(esquerda)][std::get<1>(esquerda)] = 1;
+			}
+		}
+		if (std::get<1>(xy)+1 < largura) {
+			std::tuple<int, int> direita(std::get<0>(xy), std::get<1>(xy)+1);
+			if (matriz_E[std::get<0>(direita)][std::get<1>(direita)] == 1 && matriz_R[std::get<0>(direita)][std::get<1>(direita)] == 0) {
+				fila->enqueue(direita);
+				matriz_R[std::get<0>(direita)][std::get<1>(direita)] = 1;
+			}
+		}
+	}
+	delete fila;
+
+	int cont = 0;
+	for (int i = 0; i < altura; i++) {
+		for (int j = 0; j < largura; j++) {
+			if (matriz_R[i][j] == 1)
+				cont++;
+		}
+	}
+	std::cout << nome << " " << cont << std::endl;
+	
+}
