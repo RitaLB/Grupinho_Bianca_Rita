@@ -1,11 +1,3 @@
-#include <vector>
-#include <iostream>
-#include <string>
-#include <fstream>
-#include "array_stack.h"
-#include <stdexcept>
-#include <tuple>
-#include "array_queue.h"
 
 class Questao2 {
  public:

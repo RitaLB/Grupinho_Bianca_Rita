@@ -1,8 +1,12 @@
+#include <vector>
 #include <iostream>
 #include <string>
 #include <fstream>
 #include "array_stack.h"
 #include <stdexcept>
+#include <tuple>
+#include "array_queue.h"
+#include "questao2.h"
 
 enum Select {
 	FORA_TAG,
@@ -79,6 +83,7 @@ int main() {
     	
     } else std::cout << "Erro ao abrir o arquivo" << std::endl;
 
+	Questao2 Questao2(xmlfilename);
 
     return 0;
 }
