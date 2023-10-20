@@ -1,4 +1,4 @@
-// Copyright [2018] <CRita Louro Barbosa>
+// Copyright [2023] <Bianca Mazzuco Verzola e Rita Louro Barbosa>
 #ifndef STRUCTURES_ARRAY_QUEUE_H
 #define STRUCTURES_ARRAY_QUEUE_H
 
@@ -70,7 +70,6 @@ structures::ArrayQueue<T>::~ArrayQueue() {
     delete [] contents;
 }
 
-// método enfileirar ( inserir dado )
 template<typename T>
 void structures::ArrayQueue<T>::enqueue(const T& data) {
     if (full()) {
@@ -82,8 +81,6 @@ void structures::ArrayQueue<T>::enqueue(const T& data) {
     }
 }
 
-//! metodo desenfileirar ( remover ítem da fila)
-// ? não funcionou com alternativa
 template<typename T>
 T structures::ArrayQueue<T>::dequeue() {
     if (empty()) {
@@ -96,7 +93,6 @@ T structures::ArrayQueue<T>::dequeue() {
     }
 }
 
-//! metodo retorna o ultimo (ítem de trás) da fila
 template<typename T>
 T& structures::ArrayQueue<T>::back() {
     if (empty()) {
@@ -106,29 +102,23 @@ T& structures::ArrayQueue<T>::back() {
     }
 }
 
-//! metodo limpa a fila
 template<typename T>
 void structures::ArrayQueue<T>::clear() {
     end_  = -1;
-    // ## ???? está certo?
     begin_ = 0;
     size_ = 0;
 }
 
-//! metodo retorna tamanho atual
 template<typename T>
 std::size_t structures::ArrayQueue<T>::size() {
     return size_;
 }
 
-//! metodo retorna tamanho maximo
 template<typename T>
 std::size_t structures::ArrayQueue<T>::max_size() {
     return max_size_;
 }
 
-//! metodo verifica se vazio
-// está errado?
 template<typename T>
 bool structures::ArrayQueue<T>::empty() {
     if (size_ == 0) {

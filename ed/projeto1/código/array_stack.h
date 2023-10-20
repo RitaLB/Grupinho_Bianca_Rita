@@ -1,13 +1,10 @@
-// Copyright [2023] <Rita Louro Barbosa e Bianca Mazzuco Verzola >
+// Copyright [2023] <Bianca Mazzuco Verzola e Rita Louro Barbosa>
 #ifndef STRUCTURES_ARRAY_STACK_H
 #define STRUCTURES_ARRAY_STACK_H
 
 #include <cstdint>  // std::size_t
 #include <stdexcept>  // C++ exceptions
 
-/// a implementação das funções é no código .h ou em outro? está certo como fiz?
-///# por que no template não informa o tipo de dado retornado pela funçõ?
-/// ### como aplicar os testes unitários do moodle?
 namespace structures {
 
 template<typename T>
@@ -76,13 +73,9 @@ void structures::ArrayStack<T>::push(const T& data) {
     } else {
         top_ = top_ +1;
         contents[top_] = data;
-        // return top_;#### ?????
     }
 }
 
-// metodo desempilha
-// ###pq tá retornando t (?) e não um inteiro?
-// ###aqui em c++ não tem self não?
 template<typename T>
 T structures::ArrayStack<T>::pop() {
     if (empty()) {
@@ -93,8 +86,6 @@ T structures::ArrayStack<T>::pop() {
     }
 }
 
-// metodo retorna o topo
-// ###pq tá retornando T& e não um inteiro?
 template<typename T>
 T& structures::ArrayStack<T>::top() {
     if (empty()) {
@@ -136,4 +127,3 @@ bool structures::ArrayStack<T>::full() {
         return false;
     }
 }
-

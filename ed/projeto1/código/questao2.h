@@ -3,46 +3,49 @@
 class Questao2 {
  public:
     //! construtor com parametro cml
-    explicit Questao2(std::string filename);
+    explicit Questao2(std::string filename); // construtor
 
  private:
-    void ler_arquivo(std::ifstream & myfile);
-    void salvar_dado(std::string categoria, std::string dado);
-    void salvar_matriz(std::vector<std::vector<int>> matriz);
-    void calcular_questao();
+    void lerArquivo(std::ifstream &myfile); // realiza o processamento do arquivo, encontrando os dados a serem salvos nos atributos
+    void salvarDado(std::string categoria, std::string dado); // salva os dados encontrados nos atributos, de acordo com sua categoria. 
+    void salvarMatriz(std::vector<std::vector<int>> matriz); // salva matriz encontrada o xml correspondente ao caso atual
+    void determinarArea(); // realiza o calculo da área de varredura do robô
 
-    int altura;
-    int largura;
+    int altura; // altura da matriz
+    int largura; // largura da matriz
 
-    int x;
-    int y;
-    
-    std::string nome;
-    std::vector<std::vector<int>> matriz_E;
 
-    enum Select {
-   	NENHUM,
-   	ABRIU_CHAVE,
-   	ABERTURA,
-   	ABRIU_CATEGORIA,
-   	FECHAMENTO,
-   	FECHOU_CATEGORIA,
-	INFORMACAO_DADO
+    int x; // coordenada x inicial
+    int y; // coordenada y inicial
+  
+    std::string nome; // nome do cenário atual
+    std::vector<std::vector<int>> matriz_E; // Matriz inicial
+
+
+    enum Select { // controla os estados do programa, organizando o fluxo de processamento. 
+    NENHUM,
+    ABRIU_CHAVE,
+    ABERTURA,
+    ABRIU_CATEGORIA,
+    FECHAMENTO,
+    FECHOU_CATEGORIA,
+    INFORMACAO_DADO
     };
 };
+
 
 Questao2::Questao2(std::string filename) {
 
     std::ifstream myfile (filename);
 
     if (myfile.is_open()) {   
-    ler_arquivo(myfile);
+    lerArquivo(myfile);
     } else std::cout << "Erro ao abrir o arquivo" << std::endl;
 
     myfile.close();
 }
 
-void Questao2::ler_arquivo(std::ifstream & myfile) {
+void Questao2::lerArquivo(std::ifstream & myfile) {
    
     structures::ArrayStack<std::string>* pilha = new structures::ArrayStack<std::string>();
     Select select;
@@ -58,19 +61,19 @@ void Questao2::ler_arquivo(std::ifstream & myfile) {
     	// salvando a matriz dada depois do identificador <matriz>
         if (select == INFORMACAO_DADO && pilha->top() == "matriz") {
 
-            std::vector<int> linhaMatriz;
+            std::vector<int> linha_matriz;
             for (char c : line) {
                     if (c == '0') 
-                	linhaMatriz.push_back(0);
+                	linha_matriz.push_back(0);
                     else if (c == '1') 
-                	linhaMatriz.push_back(1);
+                	linha_matriz.push_back(1);
             }
             
-            matriz.push_back(linhaMatriz);
+            matriz.push_back(linha_matriz);
             cont++;
             if (cont == altura) {
                 select = NENHUM;
-                salvar_matriz(matriz);
+                salvarMatriz(matriz);
                 cont = 0;
                 matriz.clear();
             }
@@ -104,11 +107,11 @@ void Questao2::ler_arquivo(std::ifstream & myfile) {
                     select = INFORMACAO_DADO;
                 } else if (select == FECHOU_CATEGORIA) {
                     categoria = pilha->pop();
-                    salvar_dado(categoria, dado);
+                    salvarDado(categoria, dado);
                     dado = "";
                     select = NENHUM;
                     if (categoria == "cenario") {
-                        calcular_questao();
+                        determinarArea();
                     }
                 } else if (select  == INFORMACAO_DADO){
                     dado += line[i];
@@ -119,7 +122,7 @@ void Questao2::ler_arquivo(std::ifstream & myfile) {
     delete pilha;
 }
 
-void Questao2::salvar_dado(std::string categoria, std::string dado) {
+void Questao2::salvarDado(std::string categoria, std::string dado) {
     if (categoria == "x")
         x = std::stoi(dado);
 
@@ -136,11 +139,11 @@ void Questao2::salvar_dado(std::string categoria, std::string dado) {
     	nome = dado;
 }
 
-void Questao2::salvar_matriz(std::vector<std::vector<int>> matriz) {
+void Questao2::salvarMatriz(std::vector<std::vector<int>> matriz) {
 	matriz_E = matriz;
 }
 
-void Questao2::calcular_questao() {
+void Questao2::determinarArea() {
 	// criando uma matriz R de zeros
 	std::vector<std::vector<int>> matriz_R;
 	for (int i = 0; i < altura; i++) {
@@ -152,7 +155,7 @@ void Questao2::calcular_questao() {
 	}
 
 	// fila de tuplas de inteiros
-	structures::ArrayQueue<std::tuple<int, int>>* fila = new structures::ArrayQueue<std::tuple<int, int>>(200u);
+	structures::ArrayQueue<std::tuple<int, int>>* fila = new structures::ArrayQueue<std::tuple<int, int>>(80u);
 	std::tuple<int, int> xy(x, y);
 	if (matriz_E[x][y] == 1) {
 		fila->enqueue(xy);	// insere (x, y) na fila

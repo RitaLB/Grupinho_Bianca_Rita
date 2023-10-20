@@ -4,12 +4,12 @@ class Questao1 {
  public:
     //! construtor com parametro xml
     explicit Questao1(std::string filename);
-    bool correto_aninhamento = true;
+    bool correto_aninhamento = true; // será modificado para false se o arquivo xml tiver erro de aninhamento
 
  private:
-    void verificar_aninhamento(std::ifstream & myfile);
+    void verificarAninhamento(std::ifstream & myfile); //  verifica o aninhamento dos identificadores
 
-    enum Select {
+    enum Select { // controla os estados do programa, organizando o fluxo de processamento.
         NENHUM,
         ABRIU_CHAVE,
         ABERTURA,
@@ -26,13 +26,13 @@ Questao1::Questao1(std::string filename) {
     std::ifstream myfile (filename);
 
     if (myfile.is_open()) {
-        verificar_aninhamento(myfile);
+        verificarAninhamento(myfile);
     } else std::cout << "Erro ao abrir o arquivo" << std::endl;
 
     myfile.close();
 }
 
-void Questao1::verificar_aninhamento(std::ifstream &myfile) {
+void Questao1::verificarAninhamento(std::ifstream &myfile) {
 
     structures::ArrayStack<std::string>* pilha = new structures::ArrayStack<std::string>();   // pilha para a verificação de aninhamento
     Select select;
