@@ -29,7 +29,7 @@
 
 
   fatorial:
-	slti	$t1, $a0, 1
+	slti	$t1, $a0, 2
 	beq	$t1, $zero, label1
 	
 	li	$v0, 1
