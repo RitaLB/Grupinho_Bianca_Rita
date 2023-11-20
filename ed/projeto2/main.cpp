@@ -1,3 +1,5 @@
+//! Copyright [2023] Bianca Mazzuco Verzola e Rita Louro Barbosa
+
 #include <iostream>
 #include <fstream>
 #include "trie.h"
@@ -31,23 +33,22 @@ int main() {
 
     while (getline(file, line)) {			   // lendo arquivo linha por linha
         for (int i = 0; i < line.size(); i++) {
-            if (line[i] == '[') {
+            if (estado == 0 && line[i] == '[') {
                 cont_comprimento = 0;
                 chave = "";
                 pos = cont_pos;
                 estado = 1;
-            } else if (line[i] == ']') {
-                estado = 0;
+            } else if (estado == 1 && line[i] == ']') {
+                estado = 2;
             } else if (estado == 1) {
                 chave += line[i];
-            } //else if (line[i] == '\n') {
-                //arvore->insert(chave, pos, cont_comprimento);
-            //}
+            }
             cont_comprimento++;
             cont_pos++;
         }
         arvore->insert(chave, pos, cont_comprimento);
         cont_pos++;
+        estado = 0;
     }
 
     file.close();
@@ -70,6 +71,8 @@ int main() {
             cout << word << " is at (" << node->pos() << "," << node->comprimento() << ")" << endl;
         }
     }
+    
+    delete arvore;
 
     return 0;
 }

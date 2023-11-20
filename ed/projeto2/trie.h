@@ -1,7 +1,5 @@
 //! Copyright [2023] Bianca Mazzuco Verzola e Rita Louro Barbosa
 
-#include <string>
-#include <cstring>
 #include <vector>
 #include <string>
 
