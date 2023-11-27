@@ -62,13 +62,13 @@ int main() {
         std::vector<std::string> words = arvore->keysWithPrefix(word);
         if (words.size()) {
             cout << word << " is prefix of " << words.size() << " words" << endl;
+
+            structures::Trie::NoTrie* node = arvore->get(word);
+            if (node != nullptr && node->comprimento())
+                cout << word << " is at (" << node->pos() << "," << node->comprimento() << ")" << endl;
+
         } else {
             cout << word << " is not prefix" << endl;
-        }
-
-        structures::Trie::NoTrie* node = arvore->get(word);
-        if (node != nullptr && node->comprimento()) {
-            cout << word << " is at (" << node->pos() << "," << node->comprimento() << ")" << endl;
         }
     }
     
