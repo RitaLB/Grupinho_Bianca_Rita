@@ -53,18 +53,18 @@ int main() {
 
     file.close();
 
-    while (1) {  // leitura das palavras ate' encontrar "0"
+    while (1) {  // leitura das palavras até encontrar "0"
         string word;
         cin >> word;
         if (word.compare("0") == 0) {
             break;
         }
-        std::vector<std::string> words = arvore->keysWithPrefix(word);
-        if (words.size()) {
-            cout << word << " is prefix of " << words.size() << " words" << endl;
+        std::vector<std::string> chaves = arvore->keysWithPrefix(word);
+        if (chaves.size()) {
+            cout << word << " is prefix of " << chaves.size() << " words" << endl;
 
             structures::Trie::NoTrie* node = arvore->get(word);
-            if (node != nullptr && node->comprimento())
+            if (node->comprimento())
                 cout << word << " is at (" << node->pos() << "," << node->comprimento() << ")" << endl;
 
         } else {

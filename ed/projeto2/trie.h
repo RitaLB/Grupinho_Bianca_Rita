@@ -59,13 +59,15 @@ class Trie {
         unsigned long pos_;
         unsigned long comprimento_{0};  //se maior que zero, indica último caracter de uma palavra
     };
+
     NoTrie* get(std::string chave);
 
  private:
     NoTrie* insert(std::string chave, unsigned long pos, unsigned long c, NoTrie* node, int num);
     void collect(std::string chave, NoTrie* node, std::vector<std::string>& vetor);
     NoTrie* get(std::string chave, int num, NoTrie* node);
-    void remove_all(NoTrie* node);
+
+    void remove_all(NoTrie* node);  // nesse projeto, o método só foi usado no destrutor (para liberar a memória alocada)
 
     NoTrie* root;
 };
@@ -82,9 +84,19 @@ structures::Trie::~Trie() {
     remove_all(root);
 }
 
+// remove o nó dado e todos seus filhos
+void structures::Trie::remove_all(NoTrie* node) {
+    for (int i = 0; i < 26; i++) {
+        if (node->filhos()[i] != nullptr)
+            remove_all(node->filhos()[i]);
+    }
+
+    delete node;
+}
+
 // insert
 void structures::Trie::insert(std::string chave, unsigned long pos, unsigned long c) {
-    root = insert(chave, pos, c, root, 0);
+    insert(chave, pos, c, root, 0);
 }
 
 // insert privado
@@ -100,7 +112,7 @@ structures::Trie::NoTrie* structures::Trie::insert(std::string chave, unsigned l
     return node;
 }
 
-// get --> busca o último nodo da chave
+// get --> busca o último nó da chave
 structures::Trie::NoTrie* structures::Trie::get(std::string chave) {
     return get(chave, 0, root);
 }
@@ -116,7 +128,7 @@ structures::Trie::NoTrie* structures::Trie::get(std::string chave, int num, NoTr
     return get(chave, num+1, node->filhos()[chave[num]-97]);
 }
 
-// keys with prefix (retorna vetor de strings das chaves que tem determinado prefixo)
+// keys with prefix --> retorna vetor de strings das chaves que tem determinado prefixo
 std::vector<std::string> structures::Trie::keysWithPrefix(std::string prefix) {
     std::vector<std::string> vetor;
     NoTrie* node = get(prefix, 0, root);
@@ -125,10 +137,10 @@ std::vector<std::string> structures::Trie::keysWithPrefix(std::string prefix) {
     return vetor;
 }
 
-/* collect (coleta a chave se seu nodo for o nodo que representa o fim de uma palavra,
+/* collect (coleta a chave se seu nó for o nonódo que representa o fim de uma palavra,
             colocando-a no vetor, caso contrário, chama o método recursivamente para
-            os filhos do nodo --> dessa forma, são coletadas todas as chaves que um dos
-            seus nodos é o nodo passado na primeira chamada do método)    
+            os filhos do nó --> dessa forma, são coletadas todas as chaves que um dos
+            seus nós é o nó passado na primeira chamada do método)    
 */
 void structures::Trie::collect(std::string chave, NoTrie* node, std::vector<std::string>& vetor) {
     if (node->comprimento())
@@ -141,14 +153,4 @@ void structures::Trie::collect(std::string chave, NoTrie* node, std::vector<std:
             collect(nova_chave, node->filhos()[i], vetor);
         }
     }
-}
-
-// remove o nodo dado e todos seus filhos
-void structures::Trie::remove_all(NoTrie* node) {
-    for (int i = 0; i < 26; i++) {
-        if (node->filhos()[i] != nullptr)
-            remove_all(node->filhos()[i]);
-    }
-
-    delete node;
 }
